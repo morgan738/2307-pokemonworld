@@ -16,6 +16,8 @@ app.get('/dist/main.js.map', (req, res)=> res.sendFile(reactSourceMap));
 const styleSheet = path.join(__dirname, 'styles.css');
 app.get('/styles.css', (req, res)=> res.sendFile(styleSheet));
 
+app.use(express.json())
+
 app.get('/api/pokemons', async(req,res,next) => {
   try {
     const SQL = `
@@ -37,6 +39,21 @@ app.get('/api/trainers', async(req,res,next) => {
     `
     const response = await client.query(SQL)
     res.send(response.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.put('/api/pokemons/:id', async(req,res,next) => {
+  try {
+    const SQL = `
+      UPDATE pokemons
+      SET name = $1, trainer_id = $2
+      WHERE id= $3
+      RETURNING *
+    `
+    const response = await client.query(SQL, [req.body.name, req.body.trainer_id, req.params.id])
+    res.send(response.rows[0])
   } catch (error) {
     next(error)
   }
