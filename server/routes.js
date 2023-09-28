@@ -1,8 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const {
-    client,
-    fetchPokemon
+    fetchPokemon,
+    fetchTrainers,
+    assignTrainer,
+    addPokemon,
+    addTrainer
 } = require('./db')
 
 router.get('/pokemons', async(req,res,next) => {
@@ -16,12 +19,8 @@ router.get('/pokemons', async(req,res,next) => {
 
   router.get('/trainers', async(req,res,next) => {
     try {
-      const SQL = `
-        SELECT *
-        FROM trainers
-      `
-      const response = await client.query(SQL)
-      res.send(response.rows)
+      
+      res.send(await fetchTrainers())
     } catch (error) {
       next(error)
     }
@@ -29,14 +28,25 @@ router.get('/pokemons', async(req,res,next) => {
 
   router.put('/pokemons/:id', async(req,res,next) => {
     try {
-      const SQL = `
-        UPDATE pokemons
-        SET name = $1, trainer_id = $2
-        WHERE id= $3
-        RETURNING *
-      `
-      const response = await client.query(SQL, [req.body.name, req.body.trainer_id, req.params.id])
-      res.send(response.rows[0])
+      res.send(await assignTrainer(req.body))
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  router.post('/pokemons', async(req,res,next) => {
+    try {
+      res.send(await addPokemon(req.body))
+      
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  router.post('/trainers', async(req,res,next) => {
+    try {
+      res.send(await addTrainer(req.body))
+      
     } catch (error) {
       next(error)
     }

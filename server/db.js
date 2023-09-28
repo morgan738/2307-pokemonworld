@@ -10,6 +10,46 @@ const client = new pg.Client('postgres://localhost/pokemonworld');
       return response.rows
     }
 
+    const addPokemon = async(pokemon) => {
+      const SQL = `
+        INSERT INTO pokemons(name, trainer_id)
+        VALUES($1, null)
+        RETURNING *
+      `
+      const response = await client.query(SQL,[pokemon.name])
+      return response.rows[0]
+    }
+
+    const addTrainer = async(trainer) => {
+      const SQL = `
+        INSERT INTO trainers(name)
+        VALUES($1)
+        RETURNING *
+      `
+      const response = await client.query(SQL,[trainer.name])
+      return response.rows[0]
+    }
+
+    const fetchTrainers = async() => {
+        const SQL = `
+        SELECT *
+        FROM trainers
+      `
+      const response = await client.query(SQL)
+      return response.rows
+    }
+
+    const assignTrainer = async(pokemon) => {
+        const SQL = `
+        UPDATE pokemons
+        SET name = $1, trainer_id = $2
+        WHERE id= $3
+        RETURNING *
+      `
+      const response = await client.query(SQL, [pokemon.name, pokemon.trainer_id, pokemon.id])
+      return response.rows[0]
+    }
+
   
   
   
@@ -84,5 +124,9 @@ const client = new pg.Client('postgres://localhost/pokemonworld');
   module.exports = {
     client,
     fetchPokemon,
+    fetchTrainers,
+    assignTrainer,
+    addPokemon,
+    addTrainer,
     seed
   }

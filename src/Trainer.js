@@ -30,6 +30,8 @@ const Trainer = ({trainers, pokemons}) => {
                     )
                 })
             }
+
+           
         </div>
     )
 }

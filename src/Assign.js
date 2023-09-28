@@ -1,18 +1,30 @@
 import React, {useState} from "react";
 
-const Assign = ({pokemons, trainers, assignTrainer}) => {
+const Assign = ({pokemons, trainers, assignTrainer, unAssignTrainer}) => {
     const [selectedPoke, setSelectedPoke] = useState('')
     const [selectedTrainer, setSelectedTrainer] = useState('')
+
+    const [pokeToUnassign, setPokeToUnassign] = useState('')
 
     const pokeNoTrain = pokemons.filter((poke) => {
         return poke.trainer_id === null
     })
 
-    console.log(pokeNoTrain)
+    
 
+    const pokeWithTrain = pokemons.filter((poke) => {
+        return poke.trainer_id !== null
+    })
+    console.log(pokeWithTrain)
     const assign = (ev) => {
         ev.preventDefault()
         assignTrainer(selectedTrainer, selectedPoke)
+        alert("Submitted!")
+    }
+
+    const unassign = (ev) => {
+        ev.preventDefault()
+        unAssignTrainer(pokeToUnassign)
     }
     return(
         <div>
@@ -42,6 +54,26 @@ const Assign = ({pokemons, trainers, assignTrainer}) => {
                 </select>
                 <div>
                     <button type="submit">Assign!</button>
+                </div>
+            </form>
+
+            <h1>Unassign</h1>
+            <hr/>
+            <form onSubmit={unassign}>
+                <p>Unassign a pokemon...</p>
+                <select value={pokeToUnassign} onChange={ev => setPokeToUnassign(ev.target.value)}>
+                    <option value="">Choose a Pokemon</option>
+                    {
+                        pokeWithTrain.map((poke) => {
+                            return(
+                                <option key={poke.id} value={poke.id}>{poke.name}</option>
+                            )
+                        })
+                    }
+
+                </select>
+                <div>
+                    <button type="submit">Unassign</button>
                 </div>
             </form>
         </div>
